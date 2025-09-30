@@ -1,0 +1,675 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="GMATH.jpg">
+    <title>CalGrade - เครื่องคำนวณ GPA & GPAX</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #19a0c2 0%, #7014d2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            text-align: center;
+            padding: 30px;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .content {
+            padding: 30px;
+            flex: 1;
+        }
+
+        .page {
+            display: none;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        .main-menu {
+            text-align: center;
+        }
+
+        .menu-button {
+        display: inline-block;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 20px 40px;
+        margin: 15px;
+        border: none;
+        border-radius: 10px;
+        font-size: 1.2em;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        min-width: 200px;
+        }
+
+        .menu-button:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
+
+        .back-button {
+            background: #6c757d;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-bottom: 20px;
+            transition: background 0.33s ease;
+        }
+
+        .back-button:hover {
+            background: #5a6268;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus, .form-group select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .subject-item {
+            background: #f8f9fa;
+            padding: 20px;
+            margin-bottom: 15px;
+            border-radius: 10px;
+            border: 2px solid #e9ecef;
+        }
+
+        .subject-item h4 {
+            color: #495057;
+            margin-bottom: 15px;
+        }
+
+        .subject-row {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr;
+            gap: 15px;
+            align-items: end;
+        }
+
+        .calculate-button {
+            background: linear-gradient(135deg, #00b229 0%, #00ffb3 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 8px;
+            font-size: 1.1em;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .calculate-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .result {
+            background: linear-gradient(135deg, #fbe18b 0%, #ffc2b4 100%);
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .result h3 {
+            color: #2d3436;
+            font-size: 1.5em;
+            margin-bottom: 10px;
+        }
+
+        .result .score {
+            font-size: 2.5em;
+            font-weight: bold;
+            color: #222829;
+        }
+
+        .add-button {
+            background: #17a2b8;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: background 0.3s ease;
+        }
+
+        .add-button:hover {
+            background: #138496;
+        }
+
+        /* Footer Styles */
+        .footer {
+            background: linear-gradient(135deg, #2d3436 0%, #636e72 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+            margin-top: auto;
+        }
+
+        .footer-content {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .social-links {
+            margin-bottom: 20px;
+        }
+
+        .social-button {
+            display: inline-block;
+            margin: 0 10px;
+            padding: 12px 20px;
+            border-radius: 25px;
+            text-decoration: none;
+            color: white;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .social-button.instagram {
+            background: linear-gradient(135deg, #e1306c 0%, #fd1d1d 50%, #fcb045 100%);
+        }
+
+        .social-button.facebook {
+            background: #1877f2;
+        }
+
+        .social-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+            border-color: rgba(255,255,255,0.3);
+        }
+
+        .social-button i {
+            margin-right: 8px;
+        }
+
+        .copyright {
+            font-size: 0.9em;
+            opacity: 0.8;
+            border-top: 1px solid rgba(255,255,255,0.2);
+            padding-top: 20px;
+            margin-top: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .subject-row {
+                grid-template-columns: 1fr;
+                gap: 10px;
+            }
+            
+            .header h1 {
+                font-size: 2em;
+            }
+            
+            .menu-button {
+                display: block;
+                margin: 10px 0;
+            }
+
+            .social-button {
+                display: block;
+                margin: 10px auto;
+                max-width: 200px;
+            }
+
+            body {
+                padding: 10px;
+            }
+
+            .content {
+                padding: 20px;
+            }
+
+            .footer {
+                padding: 20px;
+            }
+        }
+        /* Media Query สำหรับมือถือ */
+@media (max-width: 768px) {
+    .subject-row {
+        grid-template-columns: 1fr;
+        gap: 10px;
+    }
+    
+    .header h1 {
+        font-size: 2em;
+    }
+    
+    /* ปรับปุ่มเมนูสำหรับมือถือ */
+    .main-menu {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 10px;
+    }
+    
+    .menu-button {
+        display: block;
+        margin: 10px auto;
+        width: 90%;
+        max-width: 280px;
+        text-align: center;
+        padding: 18px 20px;
+    }
+
+    .social-button {
+        display: block;
+        margin: 10px auto;
+        max-width: 200px;
+    }
+
+    body {
+        padding: 10px;
+    }
+
+    .content {
+        padding: 20px;
+    }
+
+    .footer {
+        padding: 20px;
+    }
+}
+
+/* เพิ่ม Media Query สำหรับมือถือขนาดเล็กมาก */
+@media (max-width: 480px) {
+    .menu-button {
+        width: 95%;
+        max-width: none;
+        margin: 8px auto;
+        padding: 16px 15px;
+        font-size: 1.1em;
+    }
+    
+    .header {
+        padding: 20px 15px;
+    }
+    
+    .header h1 {
+        font-size: 1.8em;
+    }
+    
+    .content {
+        padding: 15px;
+    }
+}
+
+/* เพิ่ม Media Query สำหรับ Tablet */
+@media (min-width: 769px) and (max-width: 1024px) {
+    .menu-button {
+        min-width: 220px;
+        margin: 12px;
+    }
+}
+    </style>
+    <!-- Font Awesome สำหรับไอคอนโซเชียล -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>CalGrade</h1>
+            <p>เครื่องคำนวณ GPA & GPAX ที่โคตรรรรดีย์</p>
+        </div>
+
+        <div class="content">
+            <!-- หน้าแรก -->
+            <div id="main-page" class="page active">
+                <div class="main-menu">
+                    <h2 style="margin-bottom: 30px; color: #333;">เลือกประเภทการคำนวณ</h2>
+                    <button class="menu-button" onclick="showPage('gpa-page')">
+                        คำนวณ GPA<br>
+                        <small style="opacity: 0.8;">คำนวณเกรดรายวิชา</small>
+                    </button>
+                    <button class="menu-button" onclick="showPage('gpax-page')">
+                        คำนวณ GPAX<br>
+                        <small style="opacity: 0.8;">คำนวณเกรดเฉลี่ยรวม</small>
+                    </button>
+                </div>
+            </div>
+
+            <!-- หน้า GPA -->
+            <div id="gpa-page" class="page">
+                <button class="back-button" onclick="showPage('main-page')">← กลับหน้าแรก</button>
+                <h2 style="margin-bottom: 20px; color: #333;">คำนวณ GPA</h2>
+                
+                <div class="form-group">
+                    <label for="subject-count">จำนวนวิชาที่ต้องการคำนวณ:</label>
+                    <input type="number" id="subject-count" min="1" max="20" value="1" onchange="generateSubjectFields('gpa')">
+                </div>
+
+                <div id="gpa-subjects"></div>
+                
+                <button class="calculate-button" onclick="calculateGPA()">คำนวณ GPA</button>
+                <div id="gpa-result"></div>
+            </div>
+
+            <!-- หน้า GPAX -->
+            <div id="gpax-page" class="page">
+                <button class="back-button" onclick="showPage('main-page')">← กลับหน้าแรก</button>
+                <h2 style="margin-bottom: 20px; color: #333;">คำนวณ GPAX</h2>
+                
+                <div class="form-group">
+                    <label for="year-count">จำนวนปีการศึกษาที่ต้องการคำนวณ:</label>
+                    <input type="number" id="year-count" min="1" max="10" value="1" onchange="generateYearFields()">
+                </div>
+
+                <div id="gpax-years"></div>
+                
+                <button class="calculate-button" onclick="calculateGPAX()">คำนวณ GPAX</button>
+                <div id="gpax-result"></div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <div class="footer-content">
+                <div class="social-links">
+                    <a href="#" class="social-button instagram" onclick="openInstagram()">
+                        <i class="fab fa-instagram"></i>
+                        Instagram
+                    </a>
+                    <a href="#" class="social-button facebook" onclick="openFacebook()">
+                        <i class="fab fa-facebook-f"></i>
+                        Facebook
+                    </a>
+                </div>
+                <div class="copyright">
+                    Copyright © Netiwit Waiprib
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ฟังก์ชันเปิดโซเชียลมีเดีย
+        function openInstagram() {
+            // แทนที่ 'your_instagram_username' ด้วยชื่อผู้ใช้ Instagram จริง
+            window.open('https://www.instagram.com/nt2wp_k/', '_blank');
+        }
+
+        function openFacebook() {
+            // แทนที่ 'your.facebook.profile' ด้วยชื่อผู้ใช้ Facebook จริง
+            window.open('https://www.facebook.com/netiwit.waiprib', '_blank');
+        }
+
+        // เพิ่มการตรวจสอบในฟังก์ชัน showPage
+        function showPage(pageId) {
+            const pages = document.querySelectorAll('.page');
+            pages.forEach(page => page.classList.remove('active'));
+    
+            document.getElementById(pageId).classList.add('active');
+    
+        if (pageId === 'gpa-page') {
+            // จำกัดจำนวนวิชาสูงสุด 20 วิชา
+            document.getElementById('subject-count').max = 20;
+            document.getElementById('subject-count').min = 1;
+            generateSubjectFields('gpa');
+        } else if (pageId === 'gpax-page') {
+            // จำกัดจำนวนปีสูงสุด 10 ปี
+            document.getElementById('year-count').max = 10;
+            document.getElementById('year-count').min = 1;
+            generateYearFields();
+    }
+}
+
+function generateSubjectFields(type) {
+    const countInput = document.getElementById('subject-count');
+    let count = parseInt(countInput.value);
+    
+    // ตรวจสอบและจำกัดค่า
+    if (count < 1) {
+        count = 1;
+        countInput.value = 1;
+    } else if (count > 20) {
+        count = 20;
+        countInput.value = 20;
+        alert('จำนวนวิชาสูงสุดคือ 20 วิชา');
+    }
+    
+    const container = document.getElementById('gpa-subjects');
+    container.innerHTML = '';
+
+    for (let i = 1; i <= count; i++) {
+        const subjectDiv = document.createElement('div');
+        subjectDiv.className = 'subject-item';
+        subjectDiv.innerHTML = `
+            <h4>วิชาที่ ${i}</h4>
+            <div class="subject-row">
+                <div class="form-group">
+                    <label>ชื่อวิชา (ไม่จำเป็นต้องกรอก):</label>
+                    <input type="text" id="subject-name-${i}" placeholder="เช่น คณิตศาสตร์">
+                </div>
+                <div class="form-group">
+                    <label>เกรด:</label>
+                    <select id="subject-grade-${i}" required>
+                        <option value="">เลือกเกรด</option>
+                        <option value="4">A (4.0)</option>
+                        <option value="3.5">B+ (3.5)</option>
+                        <option value="3">B (3.0)</option>
+                        <option value="2.5">C+ (2.5)</option>
+                        <option value="2">C (2.0)</option>
+                        <option value="1.5">D+ (1.5)</option>
+                        <option value="1">D (1.0)</option>
+                        <option value="0">F (0.0)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>หน่วยกิต:</label>
+                    <select id="subject-credit-${i}" required>
+                        <option value="">เลือกหน่วยกิต</option>
+                        <option value="0.5">0.5</option>
+                        <option value="1">1</option>
+                        <option value="1.5">1.5</option>
+                        <option value="2">2</option>
+                        <option value="2.5">2.5</option>
+                        <option value="3">3</option>
+                        <option value="3.5">3.5</option>
+                        <option value="4">4</option>
+                        <option value="4.5">4.5</option>
+                        <option value="5">5</option>
+                    </select>
+                </div>
+            </div>
+        `;
+        container.appendChild(subjectDiv);
+    }
+}
+
+function generateYearFields() {
+    const countInput = document.getElementById('year-count');
+    let count = parseInt(countInput.value);
+    
+    // ตรวจสอบและจำกัดค่า
+    if (count < 1) {
+        count = 1;
+        countInput.value = 1;
+    } else if (count > 10) {
+        count = 10;
+        countInput.value = 10;
+        alert('จำนวนปีการศึกษาสูงสุดคือ 10 ปี');
+    }
+    
+    const container = document.getElementById('gpax-years');
+    container.innerHTML = '';
+
+    for (let i = 1; i <= count; i++) {
+        const yearDiv = document.createElement('div');
+        yearDiv.className = 'subject-item';
+        yearDiv.innerHTML = `
+            <h4>ปีการศึกษาที่ ${i}</h4>
+            <div class="subject-row">
+                <div class="form-group">
+                    <label>ปีการศึกษา (ไม่จำเป็นต้องกรอก):</label>
+                    <input type="text" id="year-name-${i}" placeholder="เช่น ปี 1 เทอม 1">
+                </div>
+                <div class="form-group">
+                    <label>เกรดเฉลี่ย:</label>
+                    <input type="number" id="year-grade-${i}" min="0" max="4" step="0.01" placeholder="0.00 - 4.00" required>
+                </div>
+                <div class="form-group">
+                    <label>หน่วยกิตรวม:</label>
+                    <input type="number" id="year-credit-${i}" min="0" step="0.5" placeholder="จำนวนหน่วยกิต" required>
+                </div>
+            </div>
+        `;
+        container.appendChild(yearDiv);
+    }
+}
+
+        function calculateGPA() {
+            const count = document.getElementById('subject-count').value;
+            let totalPoints = 0;
+            let totalCredits = 0;
+            let hasError = false;
+
+            for (let i = 1; i <= count; i++) {
+                const grade = parseFloat(document.getElementById(`subject-grade-${i}`).value);
+                const credit = parseFloat(document.getElementById(`subject-credit-${i}`).value);
+
+                if (isNaN(grade) || isNaN(credit)) {
+                    hasError = true;
+                    break;
+                }
+
+                totalPoints += grade * credit;
+                totalCredits += credit;
+            }
+
+            const resultDiv = document.getElementById('gpa-result');
+            
+            if (hasError || totalCredits === 0) {
+                resultDiv.innerHTML = `
+                    <div class="result" style="background: linear-gradient(135deg, #ff7675 0%, #fd79a8 100%);">
+                        <h3 style="color: white;">เกิดข้อผิดพลาด!</h3>
+                        <p style="color: white;">กรุณากรอกข้อมูลให้ครบถ้วน</p>
+                    </div>
+                `;
+                return;
+            }
+
+            const gpa = (totalPoints / totalCredits).toFixed(2);
+            
+            resultDiv.innerHTML = `
+                <div class="result">
+                    <h3>ผลการคำนวณ GPA</h3>
+                    <div class="score">${gpa}</div>
+                    <p>จากทั้งหมด ${totalCredits} หน่วยกิต</p>
+                </div>
+            `;
+        }
+
+        function calculateGPAX() {
+            const count = document.getElementById('year-count').value;
+            let totalPoints = 0;
+            let totalCredits = 0;
+            let hasError = false;
+
+            for (let i = 1; i <= count; i++) {
+                const grade = parseFloat(document.getElementById(`year-grade-${i}`).value);
+                const credit = parseFloat(document.getElementById(`year-credit-${i}`).value);
+
+                if (isNaN(grade) || isNaN(credit) || grade < 0 || grade > 4) {
+                    hasError = true;
+                    break;
+                }
+
+                totalPoints += grade * credit;
+                totalCredits += credit;
+            }
+
+            const resultDiv = document.getElementById('gpax-result');
+            
+            if (hasError || totalCredits === 0) {
+                resultDiv.innerHTML = `
+                    <div class="result" style="background: linear-gradient(135deg, #ff7675 0%, #fd79a8 100%);">
+                        <h3 style="color: white;">เกิดข้อผิดพลาด!</h3>
+                        <p style="color: white;">กรุณากรอกข้อมูลให้ครบถ้วนและถูกต้อง</p>
+                    </div>
+                `;
+                return;
+            }
+
+            const gpax = (totalPoints / totalCredits).toFixed(2);
+            
+            resultDiv.innerHTML = `
+                <div class="result">
+                    <h3>ผลการคำนวณ GPAX</h3>
+                    <div class="score">${gpax}</div>
+                    <p>จากทั้งหมด ${totalCredits} หน่วยกิต</p>
+                </div>
+            `;
+        }
+
+        // สร้างฟิลด์เริ่มต้นเมื่อโหลดหน้า
+        document.addEventListener('DOMContentLoaded', function() {
+            generateSubjectFields('gpa');
+        });
+    </script>
+</body>
+</html>
